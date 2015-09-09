@@ -40,11 +40,20 @@ var MenuState = {
 		//create an oscillating animation tween for the group
 		this.game.add.tween(this.titleGroup).to({y:115}, 350, Phaser.Easing.Linear.NONE, true, 0, 1000, true);
 
+		//add our start button with a callback
+		this.startButton = this.game.add.button (this.game.width/2, 300, 'startButton', this.startClick,this);
+		this.startButton.anchor.setTo(0.5,0.5);
+
 
 	},
 	update: function (){
 
 
+	},
+	startClick: function (){
+		//start button click handler
+		//start the 'play' state
+		this.game.state.start('Play');
 	}
 };
 

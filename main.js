@@ -10,5 +10,6 @@ var game = new Phaser.Game(288, 505,Phaser.AUTO, 'flappy-bird-reborn');
 game.state.add('Menu', MenuState);
 
 game.state.add('Preload', PreloadState);
+game.state.add('Play', PlayState);
 
 game.state.start('Preload');
