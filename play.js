@@ -43,12 +43,19 @@ var PlayState = {
 
 	},
 	update:function (){
-		this.game.physics.arcade.collide(this.bird, this.ground);
+		//enable collision between the bird and the ground
+		this.game.physics.arcade.collide(this.bird, this.ground, this.deathHandler, null, this);
+		//enable collisions between the bird and each group in the pipes group
+		this.pipes.forEach(function(pipeGroup){
+			this.game.physics.arcade.collide (this.bird, pipeGroup, this.deathHandler, null, this);
+		}, this);
 		//check if our angle is less than 90
 		//if it is rotate the bird towards the ground by 2.5 degrees
 		if (this.bird.angle<90){
 			this.bird.angle +=2.5;
 		}
+
+
 
 
 	},
@@ -63,6 +70,16 @@ var PlayState = {
 		
 		pipegroup.reset(this.game.width + pipegroup.width/2, pipeY)	
 
+	},
+
+	deathHandler: function (){
+		this.game.state.start ('Menu');
+	},
+
+	shutdown: function (){
+		this.game.input.keyboard.removeKey (Phaser.Keyboard.SPACEBAR);
+		this.bird.destroy();
+		this.pipes.destroy();
 	}
 };
 
