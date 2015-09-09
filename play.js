@@ -32,6 +32,12 @@ var PlayState = {
 		//add mouse/touch controls
 
 		this.input.onDown.add(this.bird.flap, this.bird);
+
+
+		//add a timer
+		this.pipeGenerator = this.game.time.events.loop (Phaser.Timer.SECOND*1.25, this.generatePipe, this);
+		this.pipeGenerator.timer.start();
+
 	},
 	update:function (){
 		this.game.physics.arcade.collide(this.bird, this.ground);
@@ -42,8 +48,17 @@ var PlayState = {
 		}
 
 
+	},
+	generatePipe: function (){
+		var pipeY = this.game.rnd.integerInRange(-100,100);
+
+		//new Pipe (game,0,0,0);
+		var pipegroup = new PipeGroup(this.game);
+		pipegroup.x = this.game.width;
+		pipegroup.y = pipeY;	
+
 	}
-}
+};
 
 //bird class
 function Bird(_x, _y ){
@@ -52,6 +67,38 @@ function Bird(_x, _y ){
 	bird.animations.add ('flap');
 	bird.animations.play('flap',12,true);
 	bird.game.physics.arcade.enableBody(bird);
-	bird.game.add.existing(bird);
+	//bird.game.add.existing(bird);
 	return bird;
+};
+
+//pipe class
+// 0 for down, 1 for up : frame
+ function Pipe(game, x, y, frame ){
+	console.log('in Pipe!');
+	Phaser.Sprite.call(this, game, x, y, 'pipe');
+	console.log('created Pipe!');
+	this.anchor.setTo(0.5,0.5);
+	this.game.physics.arcade.enableBody(this);
+	this.body.allowGravity= false;
+	this.body.immovable = true;
+	this.frame = frame;
+	game.add.existing(this);
+};
+
+Pipe.prototype = Object.create(Phaser.Sprite.prototype);
+Pipe.prototype.constructor = Pipe;
+// group to group the top and bottom pipes
+
+function PipeGroup (game, parent){
+	console.log('generating pipes in PipeGroup!');
+	Phaser.Group.call (this, game, parent);
+
+	this.topPipe = new Pipe(game,0,0,0);
+	this.add(this.topPipe);
+	this.bottomPipe = new Pipe(game, 0, 440, 1);
+	this.add(this.bottomPipe);
+
+	this.hasScored = false;
 }
+PipeGroup.prototype = Object.create(Phaser.Group.prototype);
+PipeGroup.prototype.constructor = PipeGroup;
