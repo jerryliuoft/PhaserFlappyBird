@@ -11,6 +11,8 @@ var PlayState = {
 		this.bird = Bird(100, this.game.height/2);
 		this.bird.flap = function(){
 			this.body.velocity.y = - 400;
+			//rotate the bird to -40 degrees
+			this.game.add.tween(this).to({angle:-40}, 100).start();
 
 		}
 
@@ -33,6 +35,11 @@ var PlayState = {
 	},
 	update:function (){
 		this.game.physics.arcade.collide(this.bird, this.ground);
+		//check if our angle is less than 90
+		//if it is rotate the bird towards the ground by 2.5 degrees
+		if (this.bird.angle<90){
+			this.bird.angle +=2.5;
+		}
 
 
 	}
