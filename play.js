@@ -37,6 +37,9 @@ var PlayState = {
 		//add a timer
 		this.pipeGenerator = this.game.time.events.loop (Phaser.Timer.SECOND*1.25, this.generatePipe, this);
 		this.pipeGenerator.timer.start();
+//create and add a group to hold our pipeGroup
+		this.pipes = this.game.add.group();
+
 
 	},
 	update:function (){
@@ -53,9 +56,12 @@ var PlayState = {
 		var pipeY = this.game.rnd.integerInRange(-100,100);
 
 		//new Pipe (game,0,0,0);
-		var pipegroup = new PipeGroup(this.game);
-		pipegroup.x = this.game.width;
-		pipegroup.y = pipeY;	
+		var pipegroup = this.pipes.getFirstExists(false);
+		if(!pipegroup){
+			pipegroup = new PipeGroup(this.game, this.pipes);
+		}
+		
+		pipegroup.reset(this.game.width + pipegroup.width/2, pipeY)	
 
 	}
 };
@@ -67,6 +73,9 @@ function Bird(_x, _y ){
 	bird.animations.add ('flap');
 	bird.animations.play('flap',12,true);
 	bird.game.physics.arcade.enableBody(bird);
+
+	bird.checkWorldBounds = true;
+	bird.outofBoundsKill = true;
 	//bird.game.add.existing(bird);
 	return bird;
 };
@@ -99,6 +108,25 @@ function PipeGroup (game, parent){
 	this.add(this.bottomPipe);
 
 	this.hasScored = false;
+	this.setAll('body.velocity.x', -200);
 }
 PipeGroup.prototype = Object.create(Phaser.Group.prototype);
 PipeGroup.prototype.constructor = PipeGroup;
+PipeGroup.prototype.reset = function (x,y){
+	this.topPipe.reset(0,0);
+	this.bottomPipe.reset(0,440);
+	this.x =x;
+	this.y = y;
+	this.setAll('body.velocity.x', -200);
+	this.hasScored = false;
+	this.exists = true;
+
+}
+PipeGroup.prototype.checkWorldBounds = function (){
+	if(!this.topPipe.inWorld){
+		this.exists = false;
+	}
+};
+PipeGroup.prototype.update = function (){
+	this.checkWorldBounds();
+}
